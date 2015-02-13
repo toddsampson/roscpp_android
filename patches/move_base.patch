@@ -6,6 +6,7 @@ diff -ur catkin_ws/src/navigation/move_base/CMakeLists.txt catkin_ws/src/navigat
          actionlib
          dynamic_reconfigure
 +        navfn
++        base_local_planner
 +        dwa_local_planner
 +        clear_costmap_recovery
          message_generation
@@ -16,6 +17,7 @@ diff -ur catkin_ws/src/navigation/move_base/CMakeLists.txt catkin_ws/src/navigat
          roscpp
          dynamic_reconfigure
 +        navfn
++        base_local_planner
 +        dwa_local_planner
 +        clear_costmap_recovery
  )
