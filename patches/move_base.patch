@@ -1,7 +1,7 @@
 diff -ur catkin_ws/src/navigation/move_base/CMakeLists.txt catkin_ws/src/navigation/move_base/CMakeLists.txt
 --- catkin_ws/src/navigation/move_base/CMakeLists.txt	2014-12-06 03:49:40.000000000 -0300
 +++ catkin_ws/src/navigation/move_base/CMakeLists.txt	2015-02-04 18:22:06.292433561 -0300
-@@ -8,6 +8,9 @@
+@@ -8,6 +8,10 @@
          pluginlib
          actionlib
          dynamic_reconfigure
@@ -12,7 +12,7 @@ diff -ur catkin_ws/src/navigation/move_base/CMakeLists.txt catkin_ws/src/navigat
          message_generation
          nav_core
          tf
-@@ -24,6 +27,9 @@
+@@ -24,6 +28,10 @@
      CATKIN_DEPENDS
          roscpp
          dynamic_reconfigure
@@ -23,21 +23,6 @@ diff -ur catkin_ws/src/navigation/move_base/CMakeLists.txt catkin_ws/src/navigat
  )
  
  include_directories(
-@@ -66,6 +72,14 @@
-     TARGETS
-         move_base
-         move_base_node
-+    ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
-     LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
-     RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
- )
-+
-+## Mark cpp header files for installation
-+install(DIRECTORY include/${PROJECT_NAME}/
-+  DESTINATION ${CATKIN_PACKAGE_INCLUDE_DESTINATION}
-+  FILES_MATCHING PATTERN "*.h"
-+  PATTERN ".svn" EXCLUDE
-+)
 diff -ur catkin_ws/src/navigation/move_base/include/move_base/move_base.h catkin_ws/src/navigation/move_base/include/move_base/move_base.h
 --- catkin_ws/src/navigation/move_base/include/move_base/move_base.h	2014-12-06 03:49:40.000000000 -0300
 +++ catkin_ws/src/navigation/move_base/include/move_base/move_base.h	2015-02-04 19:08:33.244369624 -0300
@@ -153,7 +138,7 @@ diff -ur catkin_ws/src/navigation/move_base/src/move_base.cpp catkin_ws/src/navi
 -    }
 +    tc_.reset(new dwa_local_planner::DWAPlannerROS());
 +    ROS_INFO("Created local_planner %s", "dwa_local_planner");
-+    tc_->initialize(std::string("TrajectoryPlannerROS"), &tf_, controller_costmap_ros_);
++    tc_->initialize(std::string("DWAPlannerROS"), &tf_, controller_costmap_ros_);
  
      // Start actively updating costmaps based on sensor data
      planner_costmap_ros_->start();

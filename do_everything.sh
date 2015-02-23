@@ -275,6 +275,9 @@ if [[ $skip -ne 1 ]] ; then
     # Patch move_base - Remove pluginlib
     patch -p0 -N -d $prefix < /opt/roscpp_android/patches/move_base.patch
 
+    # Patch costmap_2d - Remove pluginlib
+    patch -p0 -N -d $prefix < /opt/roscpp_android/patches/costmap_2d.patch
+
 fi
 
 echo
@@ -352,6 +355,19 @@ echo
 (cd $prefix/sample_app && ant debug)
 
 echo
+echo -e '\e[34mCreating move_base sample app.\e[39m'
+echo
+
+cp $my_loc/files/Android.mk.move_base $prefix/roscpp_android_ndk/Android.mk
+( cd $prefix && run_cmd sample_app move_base_app $prefix/roscpp_android_ndk )
+
+echo
+echo -e '\e[34mBuilding move_base apk.\e[39m'
+echo
+
+(cd $prefix/move_base_app && ant debug)
+
+echo
 echo 'done.'
 echo 'summary of what just happened:'
 echo '  target/      was used to build static libraries for ros software'
@@ -360,3 +376,5 @@ echo '    lib/       contains static libraries'
 echo '  roscpp_android_ndk/     is a NDK sub-project that can be imported into an NDK app'
 echo '  sample_app/  is an example of such an app, a native activity'
 echo '  sample_app/bin/sample_app-debug.apk  is the built apk'
+echo '  move_base_sample_app/  is an example of such an app, a native activity'
+echo '  move_base_app/bin/move_base_app-debug.apk  is the built apk'

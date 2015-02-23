@@ -35,20 +35,20 @@ sedcmd="sed -e "$(eval echo $sedcmd)
 
 subst() {
     target=$(echo $1 | sed 's,.in$,,')
-    $sedcmd $my_loc/files/sample_app/$1 > $2/$target
+    $sedcmd $my_loc/files/$3/$1 > $2/$target
 }
 
-files=$(cd $my_loc/files/sample_app && find . -name \*.in)
+files=$(cd $my_loc/files/$lib_name && find . -name \*.in)
 for f in $files; do
-    subst $f $prefix
+    subst $f $prefix $lib_name
 done
 
-rest=$(cd $my_loc/files/sample_app && find . -type f | grep -v '.in$')
+rest=$(cd $my_loc/files/$lib_name && find . -type f | grep -v '.in$')
 for f in $rest; do
-    cp $my_loc/files/sample_app/$f $prefix/$f
+    cp $my_loc/files/$lib_name/$f $prefix/$f
 done
 
 # Copy app icon
 mkdir -p $prefix/res/drawable
-cp $my_loc/files/sample_app/ic_launcher.png $prefix/res/drawable/ic_launcher.png
+cp $my_loc/files/$lib_name/ic_launcher.png $prefix/res/drawable/ic_launcher.png
 
