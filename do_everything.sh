@@ -377,4 +377,4 @@ echo '  roscpp_android_ndk/     is a NDK sub-project that can be imported into a
 echo '  sample_app/  is an example of such an app, a native activity'
 echo '  sample_app/bin/sample_app-debug.apk  is the built apk, it implements a subscriber and a publisher'
 echo '  move_base_sample_app/  is an example app that implements the move_base node'
-echo '  move_base_app/bin/move_base_app-debug.apk  is the built apk for the move_bas example'
+echo '  move_base_app/bin/move_base_app-debug.apk  is the built apk for the move_base example'
