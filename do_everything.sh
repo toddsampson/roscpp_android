@@ -109,7 +109,7 @@ export RBA_TOOLCHAIN=$prefix/android.toolchain.cmake
 [ -d $prefix/libs/assimp-3.1.1 ] || run_cmd get_library assimp $prefix/libs
 [ -d $prefix/libs/qhull-2012.1 ] || run_cmd get_library qhull $prefix/libs
 [ -d $prefix/libs/octomap-1.6.8 ] || run_cmd get_library octomap $prefix/libs
-[ -d $prefix/libs/yaml_cpp ] || run_cmd get_library yaml_cpp $prefix/libs
+[ -d $prefix/libs/yaml-cpp ] || run_cmd get_library yaml-cpp $prefix/libs
 [ -d $prefix/libs/opencv-2.4.9 ] || run_cmd get_library opencv $prefix/libs
 [ -d $prefix/libs/flann ] || run_cmd get_library flann $prefix/libs
 [ -d $prefix/libs/pcl ] || run_cmd get_library pcl $prefix/libs
@@ -118,6 +118,7 @@ export RBA_TOOLCHAIN=$prefix/android.toolchain.cmake
 [ -d $prefix/libs/apache-log4cxx-0.10.0 ] || run_cmd get_library log4cxx $prefix/libs
 [ -d $prefix/libs/libccd-2.0 ] || run_cmd get_library libccd $prefix/libs
 [ -d $prefix/libs/fcl-0.3.2 ] || run_cmd get_library fcl $prefix/libs
+[ -d $prefix/libs/pcrecpp ] || run_cmd get_library pcrecpp $prefix/libs
 
 [ -f $prefix/target/bin/catkin_make ] || run_cmd build_library catkin $prefix/libs/catkin
 . $prefix/target/setup.bash
@@ -174,48 +175,19 @@ if [[ $skip -ne 1 ]] ; then
     # needed by moveit_core during compilation
     patch -p0 -N -d $prefix < /opt/roscpp_android/patches/fcl.patch
 
+    # Patch pcrecpp - Add findpackage configs
+    patch -p0 -N -d $prefix < /opt/roscpp_android/patches/pcrecpp.patch
+
 
     ## ROS patches
 
-    # Patch roscpp - avoid using ifaddrs on Android as it is not natively supported
-    # TODO: https://github.com/ros/ros_comm/pull/518 merged, need to wait until new version(current 1.11.9-0)
-    patch -p0 -N -d $prefix < /opt/roscpp_android/patches/roscpp.patch
-
-    # Patch roslz4 - remove python stuff
-    # TODO: https://github.com/ros/ros_comm/pull/521 merged, need to wait until new version(current 1.11.9-0)
-    patch -p0 -N -d $prefix < /opt/roscpp_android/patches/roslz4.patch
-
-    # Patch xmlrpcpp - Add missing header
-    # TODO: https://github.com/ros/ros_comm/pull/537 merged, need to wati until new version(current 1.11.9-0)
-    patch -p0 -N -d $prefix < /opt/roscpp_android/patches/xmlrpcpp.patch
-
-    # Patch dynamic_reconfigure - Create static lib
-    # TODO: https://github.com/ros/dynamic_reconfigure/pull/42 merged, need to wait until new version (current 1.5.37)
-    patch -p0 -N -d $prefix < /opt/roscpp_android/patches/dynamic_reconfigure.patch
-
-    # Patch class_loader - Create static lib
-    # TODO: https://github.com/ros/class_loader/pull/20 merged, need to wait until new version (current 0.3.0)
-    patch -p0 -N -d $prefix < /opt/roscpp_android/patches/class_loader.patch
-
     # Patch roslib - weird issue with rospack.
     # TODO: Need to look further (only on catkin_make_isolated)
-    #patch -p0 -N -d $prefix < /opt/roscpp_android/patches/roslib.patch
+    # patch -p0 -N -d $prefix < /opt/roscpp_android/patches/roslib.patch
 
     # Patch collada_parser - cmake detects mkstemps even though Android does not support it
     # TODO: investigate how to prevent cmake to detect system mkstemps
     patch -p0 -N -d $prefix < /opt/roscpp_android/patches/collada_parser.patch
-
-    # Patch urdf - Add ARCHIVE DESTINATION
-    # TODO: https://github.com/ros/robot_model/pull/91 merged, need to wait until new version (current 1.11.5)
-    patch -p0 -N -d $prefix < /opt/roscpp_android/patches/urdf.patch
-
-    # Patch tf - Add ARCHIVE DESTINATION and don't do tests for android and remove Python lib
-    # TODO: https://github.com/ros/geometry/pull/76 merged, need to wait until new version (current 1.11.3)
-    patch -p0 -N -d $prefix < /opt/roscpp_android/patches/tf.patch
-
-    # Patch tf2_ros - Remove Python dependency
-    # TODO: https://github.com/ros/geometry_experimental/pull/72 merged, need to wait until new version (current 0.5.6)
-    patch -p0 -N -d $prefix < /opt/roscpp_android/patches/tf2_ros.patch
 
     # Patch laser_assembler - Remove testing for Android
     # TODO: It seems like there may be a better way to handle the test issues
@@ -228,14 +200,6 @@ if [[ $skip -ne 1 ]] ; then
     # https://source.android.com/reference/com/android/tradefed/testtype/GTest.html
     patch -p0 -N -d $prefix < /opt/roscpp_android/patches/laser_filters.patch
 
-    # Patch image_transport - Fix tinyxml dependency
-    # TODO: create PR
-    patch -p0 -N -d $prefix < /opt/roscpp_android/patches/image_transport.patch
-
-    # Patch camera_calibration_parsers - Fix yaml-cpp dependency
-    # TODO: create PR
-    patch -p0 -N -d $prefix < /opt/roscpp_android/patches/camera_calibration_parsers.patch
-
     # Patch camera_info_manager - remove testing for Android
     # TODO: It seems like there may be a better way to handle the test issues
     # http://stackoverflow.com/questions/22055741/googletest-for-android-ndk
@@ -246,15 +210,6 @@ if [[ $skip -ne 1 ]] ; then
     # TODO: https://github.com/ros-perception/vision_opencv/pull/55 merged, need to wait until new version (current 1.11.7)
     patch -p0 -N -d $prefix < /opt/roscpp_android/patches/cv_bridge.patch
 
-    # Patch image_view - Fix duplicated symbol
-    # TODO: https://github.com/ros-perception/image_pipeline/pull/113 merged, need to wait until new version (current 1.12.11)
-    patch -p0 -N -d $prefix < /opt/roscpp_android/patches/image_view.patch
-
-    # Patch navigation - Add ARCHIVE DESTINATION and mark headers for installation for move_base
-    # TODO: https://github.com/ros-planning/navigation/pull/296 merged, need to wait until new version (current 1.11.4)
-    # TODO: https://github.com/ros-planning/navigation/pull/297 merged, need to wait until new version (current 1.11.4)
-    patch -p0 -N -d $prefix < /opt/roscpp_android/patches/navigation.patch
-
     # Patch robot_pose_ekf - Add bfl library cmake variables, also, remove tests
     # TODO: The correct way to handle this would be to create .cmake files for bfl and do a findpackage(orocos-bfl)
     patch -p0 -N -d $prefix < /opt/roscpp_android/patches/robot_pose_ekf.patch
@@ -264,13 +219,35 @@ if [[ $skip -ne 1 ]] ; then
     # TODO: Create PR to add ARCHIVE DESTINATION
     patch -p0 -N -d $prefix < /opt/roscpp_android/patches/robot_state_publisher.patch
 
-    # Patch moveit_core plugins - Add ARCHIVE DESTINATION
-    # TODO: Create PR
-    patch -p0 -N -d $prefix < /opt/roscpp_android/patches/moveit_core_plugins.patch
-
     # Patch moveit_core - Add fcl library cmake variables
     # TODO: The correct way to handle this would be to create .cmake files for fcl and do a findpackage(fcl)
     patch -p0 -N -d $prefix < /opt/roscpp_android/patches/moveit_core.patch
+
+    # Patch moveit_core plugins - Add ARCHIVE DESTINATION
+    # TODO: PR merged: https://github.com/ros-planning/moveit_core/pull/251
+    # Wait for next release to remove (current 0.6.15)
+    patch -p0 -N -d $prefix < /opt/roscpp_android/patches/moveit_core_plugins.patch
+
+    # Patch camera_calibration_parsers - Fix yaml-cpp dependency
+    # TODO: PR created: https://github.com/ros-perception/image_common/pull/36
+    patch -p0 -N -d $prefix < /opt/roscpp_android/patches/camera_calibration_parsers.patch
+
+    # Patch image_view - Remove GTK definition
+    # TODO: Fixed in https://github.com/ros-perception/image_pipeline/commit/829b7a1ab0fa1927ef3f17f66f9f77ac47dbaacc
+    # Wait dor next release to remove (current 1.12.13)
+    patch -p0 -N -d $prefix < /opt/roscpp_android/patches/image_view.patch
+
+    # Patch urdf - Don't use pkconfig for android
+    # TODO: PR created: https://github.com/ros/robot_model/pull/111
+    patch -p0 -N -d $prefix < /opt/roscpp_android/patches/urdf.patch
+
+    # Patch global_planner - Add angles dependency
+    # TODO: PR merged: https://github.com/ros-planning/navigation/pull/359
+    # Wait for next release to remove (current 1.12.4)
+    patch -p0 -N -d $prefix < /opt/roscpp_android/patches/global_planner.patch
+
+
+    ## Demo Application specific patches
 
     # Patch move_base - Remove pluginlib
     patch -p0 -N -d $prefix < /opt/roscpp_android/patches/move_base.patch
@@ -301,7 +278,7 @@ echo
 [ -f $prefix/target/lib/libeigen.a ] || run_cmd build_eigen $prefix/libs/eigen
 [ -f $prefix/target/lib/libqhullstatic.a ] || run_cmd build_library qhull $prefix/libs/qhull-2012.1
 [ -f $prefix/target/lib/liboctomap.a ] || run_cmd build_library octomap $prefix/libs/octomap-1.6.8
-[ -f $prefix/target/lib/libyaml-cpp.a ] || run_cmd build_library yaml_cpp $prefix/libs/yaml_cpp
+[ -f $prefix/target/lib/libyaml-cpp.a ] || run_cmd build_library yaml-cpp $prefix/libs/yaml-cpp
 [ -f $prefix/target/lib/libopencv_core.a ] || run_cmd build_library opencv $prefix/libs/opencv-2.4.9
 [ -f $prefix/target/lib/libflann_cpp_s.a ] || run_cmd build_library flann $prefix/libs/flann
 [ -f $prefix/target/lib/libpcl_common.a ] || run_cmd build_library pcl $prefix/libs/pcl
@@ -310,6 +287,7 @@ echo
 [ -f $prefix/target/lib/liblog4cxx.a ] || run_cmd build_library_with_toolchain log4cxx $prefix/libs/apache-log4cxx-0.10.0
 [ -f $prefix/target/lib/libccd.a ] || run_cmd build_library libccd $prefix/libs/libccd-2.0
 [ -f $prefix/target/lib/libfcl.a ] || run_cmd build_library fcl $prefix/libs/fcl-0.3.2
+[ -f $prefix/target/lib/libpcrecpp.a ] || run_cmd build_library pcrecpp $prefix/libs/pcrecpp
 
 
 echo

@@ -73,12 +73,8 @@ echo
 # Requires docker 1.3+
 cmd_exists docker || die 'docker was not found'
 
-IMAGE=$(sudo docker images | grep "rosndk " |  awk '{print $3}')
-if [[ -z $IMAGE ]]; then
-    echo -e '\e[34mCreting docker image.\e[39m'
-    sudo docker build -t rosndk .
-    # TODO: Verify successful docker image build
-fi
+echo -e '\e[34mCreting docker image.\e[39m'
+sudo docker build -t rosndk ./docker
 
 
 if [[ $standard -eq 1 ]]; then

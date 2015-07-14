@@ -76,6 +76,9 @@ elif [ $1 == 'orocos_kdl' ]; then
 elif [ $1 == 'pcl' ]; then
     URL=https://github.com/chadrockey/pcl.git
     COMP='git'
+elif [ $1 == 'pcrecpp' ]; then
+    URL=https://github.com/brianb/pcre-7.8.git
+    COMP='git'
 elif [ $1 == 'poco' ]; then
     URL=http://pocoproject.org/releases/poco-1.4.6/poco-1.4.6p2.tar.gz
     COMP='gz'
@@ -95,8 +98,8 @@ elif [ $1 == 'urdfdom' ]; then
 elif [ $1 == 'uuid' ]; then
     URL=https://github.com/chadrockey/uuid_cmake
     COMP='git'
-elif [ $1 == 'yaml_cpp' ]; then
-    URL=https://github.com/algron/yaml-cpp.git
+elif [ $1 == 'yaml-cpp' ]; then
+    URL=https://github.com/creativa77/yaml-cpp.git
     COMP='git'
 fi
 

@@ -1,11 +1,13 @@
---- catkin_ws/src/image_pipeline/image_view/src/nodes/stereo_view.cpp	2014-12-16 15:40:10.110357891 -0300
-+++ catkin_ws/src/image_pipeline/image_view/src/nodes/stereo_view.cpp	2014-12-16 14:39:00.442235726 -0300
-@@ -311,7 +311,7 @@
-     255,  0, 0,
-   };
+--- catkin_ws/src/image_pipeline/image_view/CMakeLists.txt	2015-04-06 09:37:51.000000000 -0400
++++ catkin_ws/src/image_pipeline/image_view/CMakeLists.txt	2015-06-11 01:09:23.476120010 -0400
+@@ -17,7 +17,9 @@
+                            ${GTK2_INCLUDE_DIRS}
+                            ${OpenCV_INCLUDE_DIRS}
+ )
+-add_definitions(-DHAVE_GTK)
++if (NOT ANDROID)
++  add_definitions(-DHAVE_GTK)
++endif()
  
--void increment(int* value)
-+inline void increment(int* value)
- {
-   ++(*value);
- }
+ 
+ # Nodelet library
