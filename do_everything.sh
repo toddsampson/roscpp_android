@@ -233,7 +233,8 @@ if [[ $skip -ne 1 ]] ; then
     patch -p0 -N -d $prefix < /opt/roscpp_android/patches/camera_calibration_parsers.patch
 
     # Patch image_view - Remove GTK definition
-    # TODO: PR created: https://github.com/ros-perception/image_pipeline/pull/137
+    # TODO: Fixed in https://github.com/ros-perception/image_pipeline/commit/829b7a1ab0fa1927ef3f17f66f9f77ac47dbaacc
+    # Wait dor next release to remove (current 1.12.13)
     patch -p0 -N -d $prefix < /opt/roscpp_android/patches/image_view.patch
 
     # Patch urdf - Don't use pkconfig for android
